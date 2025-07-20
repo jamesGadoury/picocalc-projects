@@ -27,92 +27,92 @@ DIM INTEGER score
 DIM FLOAT tLast,tDelta
 
 SUB InitGame()
-    paddleX=ScreenW/2-PaddleW/2
-    paddleY=ScreenH-PaddleH*3
-    ballX=ScreenW/2
-    ballY=CeilingH+BallR
-    paddleVX=0
-    ballVX=0
-    ballVY=30
-    tLast=0
-    tDelta=0
-    score=0
+  paddleX=ScreenW/2-PaddleW/2
+  paddleY=ScreenH-PaddleH*3
+  ballX=ScreenW/2
+  ballY=CeilingH+BallR
+  paddleVX=0
+  ballVX=0
+  ballVY=30
+  tLast=0
+  tDelta=0
+  score=0
 END SUB
 
 SUB DrawPaddle(fill AS INTEGER)
-    LOCAL FLOAT x2,y2
-    x2=paddleX+PaddleW
-    y2=paddleY
-    Line paddleX,paddleY,x2,y2,PaddleH,fill
+  LOCAL FLOAT x2,y2
+  x2=paddleX+PaddleW
+  y2=paddleY
+  Line paddleX,paddleY,x2,y2,PaddleH,fill
 END SUB
 
 SUB DrawBall(fill AS INTEGER)
-    Circle ballX,ballY,BallR,,,fill,fill
+  Circle ballX,ballY,BallR,,,fill,fill
 END SUB
 
 FUNCTION Time() AS FLOAT
-    Time=Timer/1000.0
+  Time=Timer/1000.0
 END FUNCTION
 
 SUB UpdateTime()
-    LOCAL FLOAT nowT
-    nowT=Time()
-    IF tLast THEN tDelta=nowT-tLast
-    tLast=nowT
+  LOCAL FLOAT nowT
+  nowT=Time()
+  IF tLast THEN tDelta=nowT-tLast
+  tLast=nowT
 END SUB
 
 SUB ClearFrame()
-    DrawPaddle(ColorBG)
-    DrawBall(ColorBG)
+  DrawPaddle(ColorBG)
+  DrawBall(ColorBG)
 END SUB
 
 SUB DrawFrame()
-    LOCAL INTEGER tx
-    LOCAL STRING fps$
-    tx=ScreenW-FontW*9
-    Text 0,0,"score:"+Str$(score)
-    IF tDelta THEN
-        fps$="fps:"+Str$(1.0/tDelta)
-        Text tx,0,fps$
-    END IF
-    DrawPaddle(ColorDF)
-    DrawBall(ColorDF)
+  LOCAL INTEGER tx
+  LOCAL STRING fps$
+  tx=ScreenW-FontW*9
+  Text 0,0,"score:"+Str$(score)
+  IF tDelta THEN
+    fps$="fps:"+Str$(1.0/tDelta)
+    Text tx,0,fps$
+  END IF
+  DrawPaddle(ColorDF)
+  DrawBall(ColorDF)
 END SUB
 
 SUB BoundPaddle()
-    IF paddleX<BoundaryL THEN
-        paddleX=BoundaryL
-    ELSEIF paddleX+PaddleW>BoundaryR THEN
-        paddleX=BoundaryR-PaddleW
-    END IF
+  IF paddleX<BoundaryL THEN
+    paddleX=BoundaryL
+  ELSEIF paddleX+PaddleW>BoundaryR THEN
+    paddleX=BoundaryR-PaddleW
+  END IF
 END SUB
 
 SUB UpdatePaddle(k$ AS STRING)
-    LOCAL INTEGER kc
-    paddleVX=0
-    IF k$<>"" THEN
-        kc=ASC(k$)
-        SELECT CASE kc
-            CASE KeyLeft:paddleVX=-450
-            CASE KeyRight:paddleVX=450
-        END SELECT
-    END IF
-    paddleX=paddleX+paddleVX*tDelta
-    BoundPaddle
+  LOCAL INTEGER kc
+  paddleVX=0
+  IF k$<>"" THEN
+    kc=ASC(k$)
+    SELECT CASE kc
+      CASE KeyLeft:paddleVX=-450
+      CASE KeyRight:paddleVX=450
+    END SELECT
+  END IF
+  paddleX=paddleX+paddleVX*tDelta
+  BoundPaddle
 END SUB
 
 FUNCTION WallBounce() AS INTEGER
-    IF ballX-BallR<BoundaryL THEN
-        WallBounce=-1
-    ELSEIF ballX+BallR>BoundaryR THEN
-        WallBounce=1
-    ELSE
-        WallBounce=0
-    END IF
+  IF ballX-BallR<BoundaryL THEN
+    WallBounce=-1
+  ELSEIF ballX+BallR>BoundaryR THEN
+    WallBounce=1
+  ELSE
+    WallBounce=0
+  END IF
 END FUNCTION
 
 FUNCTION BallAtCeil() AS INTEGER
-    BallAtCeil=(ballY-BallR)<=CeilingH
+  BallAtCeil=(ballY-BallR)<=CeilingH
 END FUNCTION
 
 FUNCTION BallAtPaddleY() AS INTEGER
@@ -120,92 +120,92 @@ FUNCTION BallAtPaddleY() AS INTEGER
 END FUNCTION
 
 FUNCTION BallOutsidePaddleX() AS INTEGER
-    LOCAL INTEGER missL,missR
-    missL=ballX+BallR<paddleX
-    missR=ballX-BallR>paddleX+PaddleW
-    BallOutsidePaddleX=missL OR missR
+  LOCAL INTEGER missL,missR
+  missL=ballX+BallR<paddleX
+  missR=ballX-BallR>paddleX+PaddleW
+  BallOutsidePaddleX=missL OR missR
 END FUNCTION
 
 SUB StartFall()
-    IF ballVY<0 THEN ballVY=-ballVY
+  IF ballVY<0 THEN ballVY=-ballVY
 
-    ballVX=ballVX*1.05
+  ballVX=ballVX*1.05
 END SUB
 
 SUB StartRise()
-    ballVX=50+Rnd*50*Choice(Rnd<0.6,1,-1)
-    IF ballVY>0 THEN ballVY=-ballVY
+  ballVX=50+Rnd*50*Choice(Rnd<0.6,1,-1)
+  IF ballVY>0 THEN ballVY=-ballVY
 END SUB
 
 SUB IncreaseFall()
-    ballVY=ballVY+10*tDelta
+  ballVY=ballVY+10*tDelta
 END SUB
 
 SUB UpdateBall()
-    ballX=ballX+ballVX*tDelta
-    ballY=ballY+ballVY*tDelta
-    IF BallAtCeil() THEN
-        StartFall
-    ELSEIF BallAtPaddleY() THEN
-        StartRise
-    ELSE
-        IncreaseFall
-    END IF
-    IF WallBounce() THEN ballVX=-ballVX
+  ballX=ballX+ballVX*tDelta
+  ballY=ballY+ballVY*tDelta
+  IF BallAtCeil() THEN
+    StartFall
+  ELSEIF BallAtPaddleY() THEN
+    StartRise
+  ELSE
+    IncreaseFall
+  END IF
+  IF WallBounce() THEN ballVX=-ballVX
 END SUB
 
 SUB BoundBall()
-    LOCAL INTEGER w
-    w=WallBounce()
-    IF w>0 THEN ballX=BoundaryR-BallR
-    IF w<0 THEN ballX=BoundaryL+BallR
-    IF BallAtCeil() THEN
-        ballY=CeilingH+BallR+1
-    ELSEIF BallAtPaddleY() THEN
-        ballY=paddleY-BallR-1
-    END IF
+  LOCAL INTEGER w
+  w=WallBounce()
+  IF w>0 THEN ballX=BoundaryR-BallR
+  IF w<0 THEN ballX=BoundaryL+BallR
+  IF BallAtCeil() THEN
+    ballY=CeilingH+BallR+1
+  ELSEIF BallAtPaddleY() THEN
+    ballY=paddleY-BallR-1
+  END IF
 END SUB
 
 SUB DrawGameOver()
-    LOCAL INTEGER tx,ty
-    LOCAL STRING t$
-    tx=ScreenW/2-(6*FontW)
-    ty=ScreenH/2
-    t$="game over"
-    Text tx,ty,t$
+  LOCAL INTEGER tx,ty
+  LOCAL STRING t$
+  tx=ScreenW/2-(6*FontW)
+  ty=ScreenH/2
+  t$="game over"
+  Text tx,ty,t$
 END SUB
 
 SUB Main()
-    LOCAL FLOAT pTime
-    CLS
-    Timer=0
-    Pause 1
-    InitGame()
-    LOCAL FLOAT l,r,py
-    l=BoundaryL
-    r=BoundaryR
-    py=CeilingH-PaddleH
-    Line l,py,r,py,PaddleH,ColorDF
-    DO
-        UpdateTime()
-        ClearFrame()
-        UpdatePaddle(Inkey$)
-        IF BallAtPaddleY() THEN
-            IF BallOutsidePaddleX() THEN
-                DrawGameOver()
-                EXIT DO
-            ELSE
-                score=score+1
-            END IF
-        END IF
-        UpdateBall()
-        BoundBall()
-        DrawFrame()
-        pTime=FrameDur-(Time()-tLast)
-        IF pTime>0 THEN
-            Pause pTime*1000
-        END IF
-    LOOP
+  LOCAL FLOAT pTime
+  CLS
+  Timer=0
+  Pause 1
+  InitGame()
+  LOCAL FLOAT l,r,py
+  l=BoundaryL
+  r=BoundaryR
+  py=CeilingH-PaddleH
+  Line l,py,r,py,PaddleH,ColorDF
+  DO
+    UpdateTime()
+    ClearFrame()
+    UpdatePaddle(Inkey$)
+    IF BallAtPaddleY() THEN
+      IF BallOutsidePaddleX() THEN
+        DrawGameOver()
+        EXIT DO
+      ELSE
+        score=score+1
+      END IF
+    END IF
+    UpdateBall()
+    BoundBall()
+    DrawFrame()
+    pTime=FrameDur-(Time()-tLast)
+    IF pTime>0 THEN
+      Pause pTime*1000
+    END IF
+  LOOP
 END SUB
 
 Main()
