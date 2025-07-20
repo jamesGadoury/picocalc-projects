@@ -129,6 +129,8 @@ END FUNCTION
 
 SUB StartFall()
     IF ballVY<0 THEN ballVY=-ballVY
+
+    ballVX=ballVX*1.05
 END SUB
 
 SUB StartRise()
