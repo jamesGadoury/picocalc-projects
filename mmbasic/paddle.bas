@@ -50,13 +50,13 @@ SUB DrawBall(fill AS INTEGER)
     Circle ballX,ballY,BallR,,,fill,fill
 END SUB
 
-FUNCTION TimeSecs() AS FLOAT
-    TimeSecs=Timer/1000.0
+FUNCTION Time() AS FLOAT
+    Time=Timer/1000.0
 END FUNCTION
 
 SUB UpdateTime()
     LOCAL FLOAT nowT
-    nowT=TimeSecs()
+    nowT=Time()
     IF tLast THEN tDelta=nowT-tLast
     tLast=nowT
 END SUB
@@ -67,14 +67,13 @@ SUB ClearFrame()
 END SUB
 
 SUB DrawFrame()
-    LOCAL INTEGER tx,ty
+    LOCAL INTEGER tx
     LOCAL STRING fps$
     tx=ScreenW-FontW*9
-    ty=FontH*2
     Text 0,0,"score:"+Str$(score)
     IF tDelta THEN
         fps$="fps:"+Str$(1.0/tDelta)
-        Text tx,ty,fps$
+        Text tx,0,fps$
     END IF
     DrawPaddle(ColorDF)
     DrawBall(ColorDF)
@@ -167,14 +166,25 @@ SUB BoundBall()
     END IF
 END SUB
 
+SUB DrawGameOver()
+    LOCAL INTEGER tx,ty
+    LOCAL STRING t$
+    tx=ScreenW/2-(6*FontW)
+    ty=ScreenH/2
+    t$="game over"
+    Text tx,ty,t$
+END SUB
+
 SUB Main()
-    LOCAL FLOAT pauseTime
+    LOCAL FLOAT pTime
     CLS
     Timer=0
     Pause 1
     InitGame()
     LOCAL FLOAT l,r,py
-    l=BoundaryL:r=BoundaryR:py=CeilingH-PaddleH
+    l=BoundaryL
+    r=BoundaryR
+    py=CeilingH-PaddleH
     Line l,py,r,py,PaddleH,ColorDF
     DO
         UpdateTime()
@@ -182,7 +192,7 @@ SUB Main()
         UpdatePaddle(Inkey$)
         IF BallAtPaddleY() THEN
             IF BallOutsidePaddleX() THEN
-                Text 0,ScreenH/2,"game over"
+                DrawGameOver()
                 EXIT DO
             ELSE
                 score=score+1
@@ -191,8 +201,10 @@ SUB Main()
         UpdateBall()
         BoundBall()
         DrawFrame()
-        pauseTime=FrameDur-(TimeSecs()-tLast)
-        IF pauseTime>0 THEN Pause pauseTime*1000
+        pTime=FrameDur-(Time()-tLast)
+        IF pTime>0 THEN
+            Pause pTime*1000
+        END IF
     LOOP
 END SUB
 
