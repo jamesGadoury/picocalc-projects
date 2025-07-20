@@ -7,6 +7,7 @@ CONST FontW=8
 CONST FontH=12
 CONST PaddleW=ScreenW/8
 CONST PaddleH=3
+CONST PaddleSpeed=400
 CONST BallR=3
 CONST BoundaryL=0
 CONST BoundaryR=ScreenW
@@ -93,8 +94,8 @@ SUB UpdatePaddle(k$ AS STRING)
   IF k$<>"" THEN
     kc=ASC(k$)
     SELECT CASE kc
-      CASE KeyLeft:paddleVX=-450
-      CASE KeyRight:paddleVX=450
+      CASE KeyLeft:paddleVX=-PaddleSpeed
+      CASE KeyRight:paddleVX=PaddleSpeed
     END SELECT
   END IF
   paddleX=paddleX+paddleVX*tDelta
@@ -171,15 +172,13 @@ END SUB
 
 SUB DrawGameOver()
   LOCAL INTEGER tx,ty
-  LOCAL STRING t$
   tx=ScreenW/2-(6*FontW)
   ty=ScreenH/2
-  t$="game over"
-  Text tx,ty,t$
+  Text tx,ty,"game over"
 END SUB
 
 SUB Main()
-  LOCAL FLOAT pTime
+  LOCAL FLOAT pauseTime
   CLS
   Timer=0
   Pause 1
@@ -204,9 +203,9 @@ SUB Main()
     UpdateBall()
     BoundBall()
     DrawFrame()
-    pTime=FrameDur-(Time()-tLast)
-    IF pTime>0 THEN
-      Pause pTime*1000
+    pauseTime=FrameDur-(Time()-tLast)
+    IF pauseTime>0 THEN
+      Pause pauseTime*1000
     END IF
   LOOP
 END SUB
