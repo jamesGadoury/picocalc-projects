@@ -4,8 +4,7 @@ my collection of code &amp; projects I have developed for the picocalc
 ## style
 most of the LOCAL variables I create are just to keep the character count (per line) down so that all the characters fit in the width of the screen.
 
-the mmbasic (picomite) interpreter autoformats when you save files on it. much of the style I use in this gets changed. I like this reading this style
-on the picocalc better than what it autoformats it to. 
+the mmbasic (picomite) interpreter autoformats when you save files on it. code in this repo follows that autoformatted style. 
 
 ## workflow
 typically when I've been using my picocalc, I will play around with some code until I get something working on it and then later use `xmodem` to
