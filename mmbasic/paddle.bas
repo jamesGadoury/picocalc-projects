@@ -116,7 +116,10 @@ FUNCTION BallAtCeil() AS INTEGER
 END FUNCTION
 
 FUNCTION BallAtPaddleY() AS INTEGER
-    BallAtPaddleY=(ballY+BallR)>=(paddleY-PaddleH)
+    LOCAL FLOAT bb, bp
+    bb=ballY+BallR
+    bp=paddleY-PaddleH
+    BallAtPaddleY=bb>=bp
 END FUNCTION
 
 FUNCTION BallOutsidePaddleX() AS INTEGER
